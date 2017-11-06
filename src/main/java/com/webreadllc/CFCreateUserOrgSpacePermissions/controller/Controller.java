@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author michael
+ * @author Michael Hug
  */
 @RestController("/api/")
 public class Controller {
