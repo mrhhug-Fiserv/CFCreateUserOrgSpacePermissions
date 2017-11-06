@@ -21,11 +21,11 @@ public class Controller {
     public String userSpacePermisionCheck(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
 	return "{'isCFUserSpacePermisionPresent':";
     }
-    @PutMapping("/api/orgUserSpacePermisions/{org}/{space}/{user}")
+    @PutMapping("/api/createOrgUserSpacePermisions/{org}/{space}/{user}")
     public String createOrgUserSpacePermisions(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
 	return "";
     }
-    @DeleteMapping("api/orgUserSpacePermisions/{org}/{user}/{space}")
+    @DeleteMapping("api/deleteorgUserSpacePermisions/{org}/{user}/{space}")
     public String deleteorgUserSpacePermisions(@PathVariable String org, @PathVariable String user, @PathVariable String space) {
 	return "";
     }
