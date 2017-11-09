@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <Env.LDAP_SERVER_ADDRESS>corp-ad-nonprod.nc.checkfree.com</Env.LDAP_SERVER_ADDRESS>
+                <Env.LDAP_SERVER_PORT>389</Env.LDAP_SERVER_PORT>
+            </properties>
+        </action>
+    </actions>

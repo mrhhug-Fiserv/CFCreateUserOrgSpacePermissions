@@ -1,4 +1,4 @@
-package com.webreadllc.CFCreateUserOrgSpacePermissions.controller;
+package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

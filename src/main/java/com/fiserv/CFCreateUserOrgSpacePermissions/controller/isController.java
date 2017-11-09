@@ -1,4 +1,4 @@
-package com.webreadllc.CFCreateUserOrgSpacePermissions.controller;
+package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController("/api/is")
 public class isController {
-    String LDAP_SERVER_ADDRESS = "localhost";
-    String LDAP_SERVER_PORT = "389";
+    String LDAP_SERVER_ADDRESS = System.getenv("LDAP_SERVER_ADDRESS");
+    String LDAP_SERVER_PORT = System.getenv("LDAP_SERVER_PORT");
     
     //Methods for tesing connections and permisions to LDAP and CF
     @GetMapping("/api/is/LDAPConnectionPresent")

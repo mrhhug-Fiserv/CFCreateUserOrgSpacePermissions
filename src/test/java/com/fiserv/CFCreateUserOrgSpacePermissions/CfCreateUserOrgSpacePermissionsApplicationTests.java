@@ -1,4 +1,4 @@
-package com.webreadllc.CFCreateUserOrgSpacePermissions;
+package com.fiserv.CFCreateUserOrgSpacePermissions;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

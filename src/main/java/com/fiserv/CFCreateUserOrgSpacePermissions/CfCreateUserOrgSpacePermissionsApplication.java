@@ -1,4 +1,4 @@
-package com.webreadllc.CFCreateUserOrgSpacePermissions;
+package com.fiserv.CFCreateUserOrgSpacePermissions;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CfCreateUserOrgSpacePermissionsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
+            System.out.println(System.getenv("DBE"));
+            SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
 	}
 }

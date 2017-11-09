@@ -1,4 +1,4 @@
-package com.webreadllc.CFCreateUserOrgSpacePermissions.controller;
+package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
