@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController("/api/is")
 public class isController {
-    String SERVER_ADDRESS = "localhost";
+    String LDAP_SERVER_ADDRESS = "localhost";
+    String LDAP_SERVER_PORT = "389";
     
     //Methods for tesing connections and permisions to LDAP and CF
     @GetMapping("/api/is/LDAPConnectionPresent")
     public String isLDAPConnectionPresent() {
 	boolean ret = false;
-	try (Socket s = new Socket(SERVER_ADDRESS, 389)) {
+	try (Socket s = new Socket(LDAP_SERVER_ADDRESS, Integer.parseInt(LDAP_SERVER_PORT))) {
 	    ret = true;
 	} catch (IOException ex) {
 	    /* ignore */
