@@ -268,7 +268,7 @@ public class isController {
         }
         return orgs;
     }
-    private Map<String, String> getAllSpaces(String orgGuid) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    static Map<String, String> getAllSpaces(String orgGuid) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         Map<String, String> spaces = new HashMap<>();
         SSLContextBuilder builder = new SSLContextBuilder();
         builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
