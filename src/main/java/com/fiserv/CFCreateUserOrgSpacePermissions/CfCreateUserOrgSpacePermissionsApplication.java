@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class CfCreateUserOrgSpacePermissionsApplication {
-
-	public static void main(String[] args) {
-            SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
-	}
+    
+    public static void main(String[] args) {
+        SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
+    }
 }

@@ -36,6 +36,13 @@
                 <Env.LDAP_USER>svc_vsphereinv@corp.checkfree.com</Env.LDAP_USER>
                 <Env.LDAP_PASS>01qjy8^Z04xB</Env.LDAP_PASS>
                 <Env.LDAP_SEARCH_BASE>OU=Associates,DC=corp,DC=checkfree,DC=com</Env.LDAP_SEARCH_BASE>
+                <Env.CF_SERVER_ADDRESS>cloudfoundry.onefiserv.net</Env.CF_SERVER_ADDRESS>
+                <Env.CF_SERVER_PORT>443</Env.CF_SERVER_PORT>
+                <Env.CF_USER>admin</Env.CF_USER>
+                <Env.CF_PASS>d4c33eebaddd157d8d03</Env.CF_PASS>
+                
+                
+                
             </properties>
         </action>
     </actions>
