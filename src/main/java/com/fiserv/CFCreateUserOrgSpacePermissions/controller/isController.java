@@ -60,7 +60,7 @@ public class isController {
     }
 
     @GetMapping("/api/is/LDAPUserPresent/{user}")
-    public String isLDAPUserPresent(@PathVariable String user) {
+    static public String isLDAPUserPresent(@PathVariable String user) {
         String ret = "false";
         Map value = getUserBasicAttributes(user,getLdapContext());
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -144,7 +144,7 @@ public class isController {
     }
     
     //private sector
-    private LdapContext getLdapContext() {
+    static private LdapContext getLdapContext() {
         LdapContext ctx = null;
         try{
             Hashtable<String, String> env = new Hashtable<>();
@@ -161,7 +161,7 @@ public class isController {
         return ctx;
     }
     
-    private Map getUserBasicAttributes(String username, LdapContext ctx) {
+    static private Map getUserBasicAttributes(String username, LdapContext ctx) {
         Map<String, String> ret = new HashMap();
         try {
             SearchControls constraints = new SearchControls();

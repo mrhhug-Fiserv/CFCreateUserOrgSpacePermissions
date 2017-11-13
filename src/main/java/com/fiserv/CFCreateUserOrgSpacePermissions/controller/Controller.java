@@ -40,15 +40,19 @@ public class Controller {
     }
     @PutMapping("/api/createOrgUserSpacePermisions/{user}")
     public String createOrgUserSpacePermisions(@PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        String ret = "{";
-        String myOrg = user+"-org";
-        String mySpace = "sandbox";
-        ret += putUser(user);
-        ret += putOrg(myOrg);
-        ret += putSpace(myOrg, mySpace);
-        ret += putOrgmanager(myOrg, user);
-        ret += putSpacedev(myOrg, mySpace, user);
-	return ret + "}";
+        if (!isController.isLDAPUserPresent(user).contains("false")) {
+                    String ret = "{";
+            String myOrg = user+"-org";
+            String mySpace = "sandbox";
+            ret += putUser(user);
+            ret += putOrg(myOrg);
+            ret += putSpace(myOrg, mySpace);
+            ret += putOrgmanager(myOrg, user);
+            ret += putSpacedev(myOrg, mySpace, user);
+            return ret + "}";
+        }
+        return "{\"ERROR\":\"LDAP user not found\"}";
+        
     }
     @DeleteMapping("api/deleteorgUserSpacePermisions/{org}/{user}/{space}")
     public String deleteorgUserSpacePermisions(@PathVariable String org, @PathVariable String user, @PathVariable String space) {
