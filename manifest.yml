@@ -1,0 +1,6 @@
+---
+applications:
+- name: CfUserSelfSerivceProvisoning
+  buildpack : java_buildpack_offln_current
+  memory: 512M
+  instances: 1
