@@ -1,7 +1,7 @@
 ---
 applications:
-- name: CfUserSelfSerivceProvisoning
+- name: CfUserSelfServiceProvisioning
   buildpack : java_buildpack_offln_current
-  memory: 512M
+  memory: 1G
   instances: 1
   path : target\CFCreateUserOrgSpacePermissions-0.0.1-SNAPSHOT.jar
