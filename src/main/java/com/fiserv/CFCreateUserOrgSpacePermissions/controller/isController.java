@@ -1,7 +1,7 @@
 package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
+import static com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication.localhost;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
 import java.io.IOException;
 import java.net.Socket;
@@ -17,9 +17,7 @@ import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
+import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import org.apache.http.HttpEntity;
@@ -38,6 +36,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Michael Hug
@@ -47,40 +46,23 @@ public class isController {
     
     //Methods for tesing connections and permisions to LDAP and CF
     @GetMapping("/api/is/LDAPConnectionPresent")
-    public String isLDAPConnectionPresent() {
-	boolean ret = false;
-        String address = System.getenv("LDAP_SERVER_ADDRESS");
-        int port = Integer.parseInt(System.getenv("LDAP_SERVER_PORT"));
-	try (Socket s = new Socket(address, port)) {
-	    ret = true;
-	} catch (IOException ex) {
-	    /* ret remains false */
-	}
-	return "{\"isLDAPConnectionPresent\":"+ret+"}";
+    public Map<String, Boolean> isLDAPConnectionPresent() {
+        Map<String, Boolean> ret = new HashMap<>();
+        ret.put("isLDAPConnectionPresent", socketTest(System.getenv("LDAP_SERVER_ADDRESS"), Integer.parseInt(System.getenv("LDAP_SERVER_PORT"))));
+	return ret;
     }
 
     @GetMapping("/api/is/LDAPUserPresent/{user}")
-    static public String isLDAPUserPresent(@PathVariable String user) {
-        String ret = "false";
-        Map value = getUserBasicAttributes(user,getLdapContext());
-        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        String possibleReturn = gson.toJson(value);
-        if(!possibleReturn.equals("{}")){
-            ret = possibleReturn;
-        }
-	return "{\"isLDAPUserPresent\":{\""+user+"\":"+ret+"}}";
+    public Map<String, Boolean> isLDAPUserPresent(@PathVariable String user) throws NamingException {
+        Map<String, Boolean> ret = new HashMap<>();
+        ret.put("isLDAPUserPresent", getLdapContext().search(System.getenv("LDAP_SEARCH_BASE"), new BasicAttributes("sAMAccountName=", user)).hasMore());
+	return ret;
     }
     @GetMapping("/api/is/CFConnectionPresent")
-    public String isCFConnectionPresent() {
-        boolean ret = false;
-        String address = System.getenv("CF_SERVER_ADDRESS");
-        int port = Integer.parseInt(System.getenv("CF_SERVER_PORT"));
-	try (Socket s = new Socket("api."+address, port)) {
-	    ret = true;
-	} catch (IOException ex) {
-	    /* ret remains false */
-	}
-	return "{\"isCFConnectionPresent\":"+ret+"}";
+    public Map<String, Boolean> isCFConnectionPresent() {
+        Map<String, Boolean> ret = new HashMap<>();
+        ret.put("isCFConnectionPresent", socketTest(System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
+        return ret;
     }
     @GetMapping("/api/is/CFReadWritePermissionsPresent")
     public String isCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -125,26 +107,31 @@ public class isController {
     //Methods for validating CF end state
     @GetMapping("/api/is/CFUserPresent/{user}")
     public String isCFUserPresent(@PathVariable String user) {
-	return "{'isCFUserPresent':";
+	//TODO
+        return "{'isCFUserPresent':";
     }
     @GetMapping("/api/is/CfOrgPresent/{org}")
-    public String isCfOrgPresent(@PathVariable String org) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        Map<String, String> orgs = getAllOrgs();
-	return "{'isCfOrgPresent':"+orgs.containsKey(org)+"}";
+    public Map<String,Boolean> isCfOrgPresent(@PathVariable String org) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        Map<String,Boolean> ret = new HashMap<>();
+        ret.put("isCfOrgPresent", new RestTemplate().getForObject(localhost+"/api/get/orgs/", Map.class).containsKey(org));
+	return ret;
+
     }
     @GetMapping("/api/is/CfSpacePresent/{org}/{space}")
     public String isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        Map<String, String> orgs = getAllOrgs();
-        Map<String, String> spaces = getAllSpaces(orgs.get(org));
-	return "{'isCfSpacePresent':"+spaces.containsKey(space)+"}";
+//        Map<String, String> orgs = getAllOrgs();
+//        Map<String, String> spaces = getAllSpaces(orgs.get(org));
+//	return "{'isCfSpacePresent':"+spaces.containsKey(space)+"}";
+        return "";
     }
     @GetMapping("/api/is/CFPermisionPresent/{org}/{space}/{user}")
     public String isCFPermisionPresent(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
-	return "{'isCFUserSpacePermisionPresent':";
+	//TODO
+        return "{'isCFUserSpacePermisionPresent':";
     }
     
     //private sector
-    static private LdapContext getLdapContext() {
+    private LdapContext getLdapContext() {
         LdapContext ctx = null;
         try{
             Hashtable<String, String> env = new Hashtable<>();
@@ -161,145 +148,13 @@ public class isController {
         return ctx;
     }
     
-    static private Map getUserBasicAttributes(String username, LdapContext ctx) {
-        Map<String, String> ret = new HashMap();
-        try {
-            SearchControls constraints = new SearchControls();
-            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrIDs = { "distinguishedName",
-                "sn",
-                "givenname",
-                "mail",
-                "telephonenumber"
-            };
-            constraints.setReturningAttributes(attrIDs);
-            NamingEnumeration answer = ctx.search(System.getenv("LDAP_SEARCH_BASE"), "sAMAccountName="
-                + username, constraints);
-            if (answer.hasMore()) {
-                Attributes attrs = ((SearchResult) answer.next()).getAttributes();
-                for ( String i : attrIDs) {
-                    String LDAPresponse = attrs.get(i).toString();
-                    String key = LDAPresponse.substring(0, LDAPresponse.indexOf(":"));
-                    String value = LDAPresponse.substring(LDAPresponse.indexOf(":")+2);
-                    ret.put(key,value);
-                }
-            }
-        } catch (Exception ex) {
-            /* sends back an empty map */
-        }
+    private boolean socketTest(String address, int port) {
+        boolean ret = false;
+	try (Socket s = new Socket(address, port)) {
+	    ret = true;
+	} catch (IOException ex) {
+	    /* ret remains false */
+	}
         return ret;
-    }
-    
-    
-    //you don't need to get this every time, but it does go stale
-    static String getCFBearerToken() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        String ret = "";
-
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-            sslsf).build();
-        
-        HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
-        httpPost.addHeader("Accept", "application/json");
-        httpPost.addHeader("Authorization", "Basic Y2Y6");
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("grant_type", "password"));
-        params.add(new BasicNameValuePair("password", System.getenv("CF_PASS")));
-        params.add(new BasicNameValuePair("scope", ""));
-        params.add(new BasicNameValuePair("username", System.getenv("CF_USER")));
-              
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-            CloseableHttpResponse response = client.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            String responseString = EntityUtils.toString(entity, "UTF-8");
-            Map responseGson = new Gson().fromJson(responseString, Map.class);
-            ret = (String) responseGson.get("access_token");
-            
-            client.close();
-        } catch (IOException ex) {
-            
-        }
-	return ret;
-    }
-    
-    static Map<String, String> getAllOrgs() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        Map<String, String> orgs = new HashMap<>();
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-            sslsf).build();
-        
-        String bearerToken = getCFBearerToken();
-        
-        int page =1;
-        while(page > 0) {
-            HttpGet httpGet = new HttpGet("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/organizations?order-by=name&order-direction=asc&page="+(page++)+"&results-per-page=100");
-            httpGet.addHeader("Accept", "application/json");
-            httpGet.addHeader("Authorization", "Bearer "+bearerToken);
-            Map responseGson = null;
-            try {
-                CloseableHttpResponse response = client.execute(httpGet);
-                HttpEntity entity = response.getEntity();
-                String responseString = EntityUtils.toString(entity, "UTF-8");
-                responseGson = new Gson().fromJson(responseString, Map.class);
-                client.close();
-            } catch (IOException ex) {
-            
-            }
-            if(null == responseGson.get("next_url")) {
-                    page = 0;
-            }
-            for ( Object i : (ArrayList) responseGson.get("resources")) {
-                LinkedTreeMap theMap = (LinkedTreeMap) i;
-                LinkedTreeMap nested = (LinkedTreeMap) theMap.get("entity");
-                String name = (String) nested.get("name");
-                nested = (LinkedTreeMap) theMap.get("metadata");
-                String guid = (String) nested.get("guid");
-                orgs.put(name, guid);
-            }
-        }
-        return orgs;
-    }
-    static Map<String, String> getAllSpaces(String orgGuid) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        Map<String, String> spaces = new HashMap<>();
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-            sslsf).build();
-        
-        String bearerToken = getCFBearerToken();
-
-        HttpGet httpGet = new HttpGet("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/spaces?order-by=name&q=organization_guid%3A"+orgGuid);
-        httpGet.addHeader("Accept", "application/json");
-        httpGet.addHeader("Authorization", "Bearer "+bearerToken);
-        Map responseGson = null;
-        try {
-            CloseableHttpResponse response = client.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            String responseString = EntityUtils.toString(entity, "UTF-8");
-            responseGson = new Gson().fromJson(responseString, Map.class);
-            client.close();
-        } catch (IOException ex) {
-
-        }
-        for ( Object i : (ArrayList) responseGson.get("resources")) {
-            LinkedTreeMap theMap = (LinkedTreeMap) i;
-            LinkedTreeMap nested = (LinkedTreeMap) theMap.get("entity");
-            String name = (String) nested.get("name");
-            nested = (LinkedTreeMap) theMap.get("metadata");
-            String guid = (String) nested.get("guid");
-            spaces.put(name, guid);
-        }
-        return spaces;
     }
 }
