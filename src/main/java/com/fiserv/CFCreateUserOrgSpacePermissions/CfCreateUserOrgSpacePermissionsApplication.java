@@ -32,6 +32,13 @@ public class CfCreateUserOrgSpacePermissionsApplication {
         SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
     }
     
+    public static CloseableHttpClient getHttpClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                builder.build());
+        return HttpClients.custom().setSSLSocketFactory(sslsf).build();
+    }
     //you don't need to get this every time, but it does go stale
     public static String getCFBearerToken() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         String ret = "";

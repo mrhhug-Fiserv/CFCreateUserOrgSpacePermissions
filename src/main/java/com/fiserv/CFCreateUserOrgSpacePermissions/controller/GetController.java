@@ -3,6 +3,7 @@ package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 import GsonDefinitions.CFAPIResponse;
 import GsonDefinitions.resource;
 import static com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication.getCFBearerToken;
+import static com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication.getHttpClient;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -45,21 +46,12 @@ public class GetController {
         return ret;
     }
     
-    private CloseableHttpClient getHttpClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        return HttpClients.custom().setSSLSocketFactory(sslsf).build();
-    }
-    
     private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         HttpGet httpGet = new HttpGet(baseUrl+extendedUrl);
         httpGet.addHeader("Accept", "application/json");
         httpGet.addHeader("Authorization", "Bearer "+ getCFBearerToken());
         return httpGet;
     }
-    
     private void pagenate(String extendedUrl, Set<resource> ret) throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         while(null != extendedUrl) {
             HttpGet httpGet = getHTTPGET(baseUrl, extendedUrl);

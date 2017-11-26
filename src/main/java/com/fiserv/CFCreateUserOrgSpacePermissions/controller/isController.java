@@ -1,37 +1,28 @@
 package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
+import static com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication.getHttpClient;
 import static com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication.localhost;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import javax.naming.Context;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,50 +49,42 @@ public class isController {
         ret.put("isLDAPUserPresent", getLdapContext().search(System.getenv("LDAP_SEARCH_BASE"), new BasicAttributes("sAMAccountName=", user)).hasMore());
 	return ret;
     }
+    
     @GetMapping("/api/is/CFConnectionPresent")
     public Map<String, Boolean> isCFConnectionPresent() {
         Map<String, Boolean> ret = new HashMap<>();
         ret.put("isCFConnectionPresent", socketTest(System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
         return ret;
     }
+    
     @GetMapping("/api/is/CFReadWritePermissionsPresent")
-    public String isCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        boolean ret = false;
+    public Map<String, Boolean> isCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+        Map<String, Boolean> ret = new HashMap<>();
 
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-            sslsf).build();
-        
         HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
         httpPost.addHeader("Accept", "application/json");
         httpPost.addHeader("Authorization", "Basic Y2Y6");
         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
+         
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("grant_type", "password"));
         params.add(new BasicNameValuePair("password", System.getenv("CF_PASS")));
         params.add(new BasicNameValuePair("scope", ""));
         params.add(new BasicNameValuePair("username", System.getenv("CF_USER")));
-              
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-            CloseableHttpResponse response = client.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            String responseString = EntityUtils.toString(entity, "UTF-8");
-            Map responseGson = new Gson().fromJson(responseString, Map.class);
-            String myScope = (String) responseGson.get("scope");
-            List<String> splitted = Arrays.asList(myScope.split("\\s+"));
-            if(splitted.contains("cloud_controller.admin") && splitted.contains("cloud_controller.read") && splitted.contains("cloud_controller.write")) {
-                ret = true;
+        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        
+        try (CloseableHttpClient client = getHttpClient()) {
+            String responseString = EntityUtils.toString(client.execute(httpPost).getEntity());
+            Map<String, String> responseGson = new Gson().fromJson(responseString, Map.class);
+            String myScope = responseGson.get("scope");
+            if(myScope.contains("cloud_controller.admin") && myScope.contains("cloud_controller.read") && myScope.contains("cloud_controller.write")) {
+                ret.put("isCFReadWritePermissionsPresent", Boolean.TRUE);
             }
-            client.close();
-        } catch (IOException ex) {
-            
+            else {
+                ret.put("isCFReadWritePermissionsPresent", Boolean.FALSE);
+            }
         }
-	return "{'isCFReadWritePermissionsPresent':"+ret+"}";
+        return ret;
     }
     
     //Methods for validating CF end state
