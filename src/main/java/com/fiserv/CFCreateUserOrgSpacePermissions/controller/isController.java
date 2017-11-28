@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import org.apache.http.NameValuePair;
@@ -46,14 +46,16 @@ public class isController {
     @GetMapping("/api/is/LDAPUserPresent/{user}")
     public Map<String, Boolean> isLDAPUserPresent(@PathVariable String user) throws NamingException {
         Map<String, Boolean> ret = new HashMap<>();
-        ret.put("isLDAPUserPresent", getLdapContext().search(System.getenv("LDAP_SEARCH_BASE"), new BasicAttributes("sAMAccountName=", user)).hasMore());
+        SearchControls constraints = new SearchControls();
+        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        ret.put("isLDAPUserPresent", getLdapContext().search(System.getenv("LDAP_SEARCH_BASE"), "sAMAccountName="+ user, constraints).hasMore());
 	return ret;
     }
     
     @GetMapping("/api/is/CFConnectionPresent")
     public Map<String, Boolean> isCFConnectionPresent() {
         Map<String, Boolean> ret = new HashMap<>();
-        ret.put("isCFConnectionPresent", socketTest(System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
+        ret.put("isCFConnectionPresent", socketTest("api."+System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
         return ret;
     }
     
@@ -125,7 +127,7 @@ public class isController {
             env.put(Context.SECURITY_CREDENTIALS, System.getenv("LDAP_PASS"));
             env.put(Context.PROVIDER_URL, "ldap://"+System.getenv("LDAP_SERVER_ADDRESS")+":"+System.getenv("LDAP_SERVER_PORT"));
             ctx = new InitialLdapContext(env, null);
-        }catch(NamingException nex){
+        } catch(NamingException nex){
             /* returns a null ctx */
         }
         return ctx;
@@ -136,7 +138,8 @@ public class isController {
 	try (Socket s = new Socket(address, port)) {
 	    ret = true;
 	} catch (IOException ex) {
-	    /* ret remains false */
+            /* ret remains false */
+            System.out.println("Cannot connect to address on port " + address + port);
 	}
         return ret;
     }

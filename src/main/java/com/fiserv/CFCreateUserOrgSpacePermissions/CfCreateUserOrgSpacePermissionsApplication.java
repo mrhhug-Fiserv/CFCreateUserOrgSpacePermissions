@@ -2,6 +2,7 @@ package com.fiserv.CFCreateUserOrgSpacePermissions;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -40,15 +41,8 @@ public class CfCreateUserOrgSpacePermissionsApplication {
         return HttpClients.custom().setSSLSocketFactory(sslsf).build();
     }
     //you don't need to get this every time, but it does go stale
-    public static String getCFBearerToken() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        String ret = "";
-
-        SSLContextBuilder builder = new SSLContextBuilder();
-        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                builder.build());
-        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-            sslsf).build();
+    public static String getCFBearerToken() throws UnsupportedEncodingException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+        String ret = null;
         
         HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
         httpPost.addHeader("Accept", "application/json");
@@ -60,18 +54,13 @@ public class CfCreateUserOrgSpacePermissionsApplication {
         params.add(new BasicNameValuePair("password", System.getenv("CF_PASS")));
         params.add(new BasicNameValuePair("scope", ""));
         params.add(new BasicNameValuePair("username", System.getenv("CF_USER")));
-              
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
+        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        try (CloseableHttpClient client = getHttpClient()) {
             CloseableHttpResponse response = client.execute(httpPost);
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, "UTF-8");
-            Map responseGson = new Gson().fromJson(responseString, Map.class);
-            ret = (String) responseGson.get("access_token");
-            
-            client.close();
-        } catch (IOException ex) {
-            
+            Map<String, String> responseGson = new Gson().fromJson(responseString, Map.class);
+            ret = responseGson.get("access_token");
         }
 	return ret;
     }

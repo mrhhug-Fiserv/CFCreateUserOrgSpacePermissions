@@ -9,14 +9,12 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,27 +30,31 @@ public class GetController {
     private final String baseUrl = "https://api."+System.getenv("CF_SERVER_ADDRESS");
     
     @GetMapping("/api/get/orgs/")
-    public Set<resource> getOrgs() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
-        Set<resource> ret = new HashSet<>();
-        pagenate("/v2/organizations", ret);
+    public Map<String, String> getOrgs() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+        Map<String, String> ret = new HashMap<>();
+        for( resource i : pagenate("/v2/organizations")) {
+            ret.put(i.entity.name, i.metadata.guid);
+        }
         return ret;
     }
     
     @GetMapping("/api/get/spaces/{orgGuid}")
-    public Set<resource> getSpaces(@PathVariable String orgGuid) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException { 
-        Set<resource> ret = new HashSet<>();
-        //String extendedUrl = "/v2/organizations/"+orgGuid+"/spaces?results-per-page=3";
-        pagenate("/v2/organizations/"+orgGuid+"/spaces", ret);
+    public Map<String, String> getSpaces(@PathVariable String orgGuid) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException { 
+        Map<String, String> ret = new HashMap<>();
+        for( resource i : pagenate("/v2/organizations/"+orgGuid+"/spaces")) {
+            ret.put(i.entity.name, i.metadata.guid);
+        }
         return ret;
     }
     
-    private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         HttpGet httpGet = new HttpGet(baseUrl+extendedUrl);
         httpGet.addHeader("Accept", "application/json");
         httpGet.addHeader("Authorization", "Bearer "+ getCFBearerToken());
         return httpGet;
     }
-    private void pagenate(String extendedUrl, Set<resource> ret) throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    private Set<resource> pagenate(String extendedUrl ) throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        Set<resource> ret = new HashSet<>();
         while(null != extendedUrl) {
             HttpGet httpGet = getHTTPGET(baseUrl, extendedUrl);
             CFAPIResponse responseGson;
@@ -63,5 +65,6 @@ public class GetController {
             extendedUrl = responseGson.next_url;
             ret.addAll(responseGson.resources);
         }
+        return ret;
     }
 }
