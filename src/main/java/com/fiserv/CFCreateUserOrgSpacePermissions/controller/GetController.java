@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,6 +30,16 @@ public class GetController {
 
     private final String baseUrl = "https://api."+System.getenv("CF_SERVER_ADDRESS");
     
+    @GetMapping("/api/get/users/")
+    public Map<String, String> getUsers() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException { 
+        Map<String, String> ret = new HashMap<>();
+        for( resource i : pagenate("/v2/users")) {
+            ret.put(i.entity.username, i.metadata.guid);
+        }
+        ret.remove(null); // spring exploded on the null key
+        return ret;
+    }
+    
     @GetMapping("/api/get/orgs/")
     public Map<String, String> getOrgs() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         Map<String, String> ret = new HashMap<>();
@@ -46,6 +57,8 @@ public class GetController {
         }
         return ret;
     }
+    
+    
     
     private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         HttpGet httpGet = new HttpGet(baseUrl+extendedUrl);

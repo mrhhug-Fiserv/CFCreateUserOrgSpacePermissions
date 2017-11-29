@@ -38,4 +38,16 @@ public class entity {
     public String events_url;
     public String security_groups_url;
     public String staging_security_groups_url;
+    
+    public String admin;
+    public String active;
+    public String default_space_guid;
+    public String username;
+    //public String spaces_url;
+    public String organizations_url;
+    public String managed_organizations_url;
+    public String billing_managed_organizations_url;
+    public String audited_organizations_url;
+    public String managed_spaces_url;
+    public String audited_spaces_url;
 }

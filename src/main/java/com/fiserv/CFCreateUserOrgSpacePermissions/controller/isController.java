@@ -34,6 +34,10 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController("/api/is")
 public class isController {
+
+    static Map<String, String> getAllSpaces(String get) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     //Methods for tesing connections and permisions to LDAP and CF
     @GetMapping("/api/is/LDAPConnectionPresent")

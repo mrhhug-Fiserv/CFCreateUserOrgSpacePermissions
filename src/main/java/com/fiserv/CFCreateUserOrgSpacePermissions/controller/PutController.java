@@ -12,8 +12,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,7 +69,7 @@ public class PutController{
             
         }
         /*
-        two different types of responses from uaa api - in both cases the end result is that user exists
+        two different types of responses from api - in both cases the end result is that org exists
         {"description":"The organization name is taken: mhug-org","error_code":"CF-OrganizationNameTaken","code":30002.0}
         {"metadata":{"guid":"d1e9be33-c8f0-44b2-9f03-8f42e07ae82c","url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c","created_at":"2017-11-28T13:04:26Z","updated_at":"2017-11-28T13:04:26Z"},"entity":{"name":"mhug-orgg","billing_enabled":false,"quota_definition_guid":"adaaf229-00ef-4391-b4af-c54bb722071b","status":"active","default_isolation_segment_guid":null,"quota_definition_url":"/v2/quota_definitions/adaaf229-00ef-4391-b4af-c54bb722071b","spaces_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/spaces","domains_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/domains","private_domains_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/private_domains","users_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/users","managers_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/managers","billing_managers_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/billing_managers","auditors_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/auditors","app_events_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/app_events","space_quota_definitions_url":"/v2/organizations/d1e9be33-c8f0-44b2-9f03-8f42e07ae82c/space_quota_definitions"}}
         */
@@ -90,16 +94,15 @@ public class PutController{
             
         }
         /*
-        two different types of responses from uaa api - in both cases the end result is that user exists
+        two different types of responses from api - in both cases the end result is that space exists
         {"description":"The app space name is taken: sandbox","error_code":"CF-SpaceNameTaken","code":40002.0}
         {"metadata":{"guid":"b77b933a-c72c-4da9-a54f-6c260f37ca4e","url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e","created_at":"2017-11-28T13:27:12Z","updated_at":"2017-11-28T13:27:12Z"},"entity":{"name":"sandbox","organization_guid":"92d0d39d-5061-40c6-bb52-5111b5bbc3ac","space_quota_definition_guid":null,"isolation_segment_guid":null,"allow_ssh":true,"organization_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac","organization":{"metadata":{"guid":"92d0d39d-5061-40c6-bb52-5111b5bbc3ac","url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac","created_at":"2016-02-05T14:45:27Z","updated_at":null},"entity":{"name":"mhug-org","billing_enabled":false,"quota_definition_guid":"adaaf229-00ef-4391-b4af-c54bb722071b","status":"active","default_isolation_segment_guid":null,"quota_definition_url":"/v2/quota_definitions/adaaf229-00ef-4391-b4af-c54bb722071b","spaces_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/spaces","domains_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/domains","private_domains_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/private_domains","users_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/users","managers_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/managers","billing_managers_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/billing_managers","auditors_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/auditors","app_events_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/app_events","space_quota_definitions_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/space_quota_definitions"}},"developers_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/developers","developers":[],"managers_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/managers","managers":[],"auditors_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/auditors","auditors":[],"apps_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/apps","apps":[],"routes_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/routes","routes":[],"domains_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/domains","domains":[{"metadata":{"guid":"a460f839-477d-4e0d-a00b-b06eb2078a80","url":"/v2/shared_domains/a460f839-477d-4e0d-a00b-b06eb2078a80","created_at":"2015-10-28T15:18:30Z","updated_at":"2017-11-16T01:38:33Z"},"entity":{"name":"cloudfoundry.onefiserv.net","router_group_guid":null,"router_group_type":null}},{"metadata":{"guid":"65842fa8-3f2d-4dcc-90bf-aee6813a8066","url":"/v2/shared_domains/65842fa8-3f2d-4dcc-90bf-aee6813a8066","created_at":"2017-11-02T13:47:41Z","updated_at":"2017-11-02T13:47:41Z"},"entity":{"name":"tcp.cloudfoundry.onefiserv.net","router_group_guid":"3f8b68ab-3d42-4a18-591f-c9e9e7dbafd4","router_group_type":null}}],"service_instances_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/service_instances","service_instances":[],"app_events_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/app_events","events_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/events","security_groups_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/security_groups","security_groups":[{"metadata":{"guid":"90e68f5a-93ca-4641-9140-bec087cf1a29","url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29","created_at":"2015-10-28T15:18:30Z","updated_at":"2016-01-07T13:29:11Z"},"entity":{"name":"all_open","rules":[{"protocol":"all","destination":"0.0.0.0-255.255.255.255"}],"running_default":true,"staging_default":true,"spaces_url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29/spaces","staging_spaces_url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29/staging_spaces"}}],"staging_security_groups_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/staging_security_groups","staging_security_groups":[{"metadata":{"guid":"90e68f5a-93ca-4641-9140-bec087cf1a29","url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29","created_at":"2015-10-28T15:18:30Z","updated_at":"2016-01-07T13:29:11Z"},"entity":{"name":"all_open","rules":[{"protocol":"all","destination":"0.0.0.0-255.255.255.255"}],"running_default":true,"staging_default":true,"spaces_url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29/spaces","staging_spaces_url":"/v2/security_groups/90e68f5a-93ca-4641-9140-bec087cf1a29/staging_spaces"}}]}}
         */
 	return ret;
     }
     @PutMapping("/api/put/spacedev/{org}/{space}/{user}")
-    public String putSpacedev(@PathVariable String org, @PathVariable String space, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException, IOException {
+    public Map<String, Object> putSpacedev(@PathVariable String org, @PathVariable String space, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException, IOException {
         Map<String, Object> ret;
-        
         Map<String, String> orgs = new RestTemplate().getForObject(
                 "http://localhost:"+System.getenv("PORT")+"/api/get/orgs/", 
                 Map.class);
@@ -110,55 +113,38 @@ public class PutController{
                 Map.class);
         String spaceGuid = spaces.get(space);
         
-        HttpPost httpPost = getHttpPost("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/spaces/"+spaces.get(space)+"/developers");
-//        Map<String, String> orgs = new RestTemplate().getForObject(
-//                "http://localhost:"+System.getenv("PORT")+"/api/get/orgs/", 
-//                Map.class);
-//        String payload = "{\"name\":\""+space+"\",\"organization_guid\":\""+orgs.get(org)+"\"}";
-//        httpPost.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
-//            
-//        try (CloseableHttpClient client = getHttpClient()) {
-//            CloseableHttpResponse response = client.execute(httpPost);
-//            HttpEntity entity = response.getEntity();
-//            String responseString = EntityUtils.toString(entity);
-//            ret = new Gson().fromJson(responseString, Map.class);
-//            
-//        }
+        Map<String, String> users = new RestTemplate().getForObject(
+                "http://localhost:"+System.getenv("PORT")+"/api/get/users/", 
+                Map.class);
+        String userGuid = users.get(user);
 
+        //HttpPost httpPost = getHttpPost("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/spaces/"+spaceGuid+"/developers");
+        
+        
+        HttpPut httpPost = new HttpPut("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/spaces/"+spaceGuid+"/developers/"+userGuid);
+        httpPost.addHeader("Accept", "application/json");
+        httpPost.addHeader("Authorization", "Bearer "+getCFBearerToken());
+        httpPost.addHeader("Content-Type", "application/json");
+        
+        
+        
+        //String payload = "{\"username\": \""+user+"\",\"origin\":\"ldap\"}";
+        //httpPost.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
+            
+        try (CloseableHttpClient client = getHttpClient()) {
+            CloseableHttpResponse response = client.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity);
+            ret = new Gson().fromJson(responseString, Map.class);
+            
+        }
+        
 
-
-
-
-//	String responseString = "Internal Failure";
-//        Map<String, String> orgs = isController.getAllOrgs();
-//        Map<String, String> spaces = isController.getAllSpaces(orgs.get(org));
-//	SSLContextBuilder builder = new SSLContextBuilder();
-//        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-//        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-//                builder.build());
-//        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(
-//            sslsf).build();
-//        
-//        String bearerToken = getCFBearerToken();
-//
-//        HttpPut httpPut = new HttpPut("https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/spaces/"+spaces.get(space)+"/developers");
-//        httpPut.addHeader("Accept", "application/json");
-//        httpPut.addHeader("Authorization", "Bearer "+bearerToken);
-//        httpPut.addHeader("Content-Type", "application/json");
-//        
-//        try {
-//            String payload = "{\"username\": \""+user+"\"}";
-//            httpPut.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
-//            CloseableHttpResponse response = client.execute(httpPut);
-//            HttpEntity entity = response.getEntity();
-//            responseString = EntityUtils.toString(entity, "UTF-8");
-//            client.close();
-//        } catch (IOException ex) {
-//
-//        }
-//        
-//	return responseString;
-return "";
+        /*
+        two different types of responses from api - in both cases the end result is that user is a dev
+        {"description": "Invalid relation: 5303ab33-d643-4178-92eb-08400e6880ae","error_code": "CF-InvalidRelation","code": 1002}        
+        */
+        return ret;
     }
     @PutMapping("/api/put/orgmanager/{org}/{user}")
     public String putOrgmanager(@PathVariable String org, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
