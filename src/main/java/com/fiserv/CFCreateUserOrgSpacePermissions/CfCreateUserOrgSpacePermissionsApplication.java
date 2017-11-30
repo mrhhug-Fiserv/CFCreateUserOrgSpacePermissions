@@ -40,6 +40,7 @@ public class CfCreateUserOrgSpacePermissionsApplication {
                 builder.build());
         return HttpClients.custom().setSSLSocketFactory(sslsf).build();
     }
+    
     //you don't need to get this every time, but it does go stale
     public static String getCFBearerToken() throws UnsupportedEncodingException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         String ret = null;
