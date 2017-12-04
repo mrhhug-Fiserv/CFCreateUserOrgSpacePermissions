@@ -34,11 +34,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @RestController("/api/is")
 public class isController {
-
-    static Map<String, String> getAllSpaces(String get) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+   
     //Methods for tesing connections and permisions to LDAP and CF
     @GetMapping("/api/is/LDAPConnectionPresent")
     public Map<String, Boolean> isLDAPConnectionPresent() {
@@ -62,7 +58,6 @@ public class isController {
         ret.put("isCFConnectionPresent", socketTest("api."+System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
         return ret;
     }
-    
     @GetMapping("/api/is/CFReadWritePermissionsPresent")
     public Map<String, Boolean> isCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         Map<String, Boolean> ret = new HashMap<>();
@@ -95,9 +90,11 @@ public class isController {
     
     //Methods for validating CF end state
     @GetMapping("/api/is/CFUserPresent/{user}")
-    public String isCFUserPresent(@PathVariable String user) {
+    public Map<String, String> isCFUserPresent(@PathVariable String user) {
 	//TODO
-        return "{'isCFUserPresent':";
+        Map<String, String> ret = new HashMap<>();
+        ret.put("isCFUserPresent", "//TODO");
+        return ret;
     }
     @GetMapping("/api/is/CfOrgPresent/{org}")
     public Map<String,Boolean> isCfOrgPresent(@PathVariable String org) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -107,16 +104,18 @@ public class isController {
 
     }
     @GetMapping("/api/is/CfSpacePresent/{org}/{space}")
-    public String isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-//        Map<String, String> orgs = getAllOrgs();
-//        Map<String, String> spaces = getAllSpaces(orgs.get(org));
-//	return "{'isCfSpacePresent':"+spaces.containsKey(space)+"}";
-        return "";
+    public Map<String, String> isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        //TODO
+        Map<String, String> ret = new HashMap<>();
+        ret.put("isCfSpacePresent", "//TODO");
+        return ret;
     }
     @GetMapping("/api/is/CFPermisionPresent/{org}/{space}/{user}")
-    public String isCFPermisionPresent(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
+    public Map<String, String> isCFPermisionPresent(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
 	//TODO
-        return "{'isCFUserSpacePermisionPresent':";
+        Map<String, String> ret = new HashMap<>();
+        ret.put("isCFUserSpacePermisionPresent", "//TODO");
+        return ret;
     }
     
     //private sector
@@ -136,7 +135,6 @@ public class isController {
         }
         return ctx;
     }
-    
     private boolean socketTest(String address, int port) {
         boolean ret = false;
 	try (Socket s = new Socket(address, port)) {

@@ -97,6 +97,27 @@ public class PutController{
         httpPut.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
 
         return executeHttpCall(httpPut);
+         /*
+        only valid response
+        {"metadata":{"guid":"92d0d39d-5061-40c6-bb52-5111b5bbc3ac","url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac","created_at":"2016-02-05T14:45:27Z","updated_at":null},"entity":{"name":"mhug-org","billing_enabled":false,"quota_definition_guid":"adaaf229-00ef-4391-b4af-c54bb722071b","status":"active","default_isolation_segment_guid":null,"quota_definition_url":"/v2/quota_definitions/adaaf229-00ef-4391-b4af-c54bb722071b","spaces_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/spaces","domains_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/domains","private_domains_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/private_domains","users_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/users","managers_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/managers","billing_managers_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/billing_managers","auditors_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/auditors","app_events_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/app_events","space_quota_definitions_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac/space_quota_definitions"}}
+        */
+    }
+    
+    @PutMapping("/api/put/orgmanager/{org}/{user}")
+    public Map<String, Object> putOrgManager(@PathVariable String org, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+        Map<String, String> orgs = new RestTemplate().getForObject(
+                "http://localhost:"+System.getenv("PORT")+"/api/get/orgs/", 
+                Map.class);
+        String orgGuid = orgs.get(org);
+        
+        String url = "https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/organizations/"+orgGuid+"/managers";
+        HttpPut httpPut = new HttpPut(url);
+        populateHttpEntityEnclosingRequestBase(httpPut);
+        
+        String payload = "{\"username\": \""+user+"\"}";
+        httpPut.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
+
+        return executeHttpCall(httpPut);
     }
     
     @PutMapping("/api/put/spacedev/{org}/{space}/{user}")
@@ -119,26 +140,10 @@ public class PutController{
         httpPut.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
 
         return executeHttpCall(httpPut);
+        //{"metadata":{"guid":"b77b933a-c72c-4da9-a54f-6c260f37ca4e","url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e","created_at":"2017-11-28T13:27:12Z","updated_at":"2017-11-28T13:27:12Z"},"entity":{"name":"sandbox","organization_guid":"92d0d39d-5061-40c6-bb52-5111b5bbc3ac","space_quota_definition_guid":null,"isolation_segment_guid":null,"allow_ssh":true,"organization_url":"/v2/organizations/92d0d39d-5061-40c6-bb52-5111b5bbc3ac","developers_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/developers","managers_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/managers","auditors_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/auditors","apps_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/apps","routes_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/routes","domains_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/domains","service_instances_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/service_instances","app_events_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/app_events","events_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/events","security_groups_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/security_groups","staging_security_groups_url":"/v2/spaces/b77b933a-c72c-4da9-a54f-6c260f37ca4e/staging_security_groups"}}
     }
     
-    
-    @PutMapping("/api/put/orgmanager/{org}/{user}")
-    public Map<String, Object> putOrgManager(@PathVariable String org, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
-        Map<String, String> orgs = new RestTemplate().getForObject(
-                "http://localhost:"+System.getenv("PORT")+"/api/get/orgs/", 
-                Map.class);
-        String orgGuid = orgs.get(org);
-        
-        String url = "https://api."+System.getenv("CF_SERVER_ADDRESS")+"/v2/organizations/"+orgGuid+"/managers";
-        HttpPut httpPut = new HttpPut(url);
-        populateHttpEntityEnclosingRequestBase(httpPut);
-        
-        String payload = "{\"username\": \""+user+"\"}";
-        httpPut.setEntity(new ByteArrayEntity(payload.getBytes("UTF-8")));
 
-        return executeHttpCall(httpPut);
-    }
-    
     private HttpEntityEnclosingRequestBase populateHttpEntityEnclosingRequestBase(HttpEntityEnclosingRequestBase par) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException { 
         par.addHeader("Accept", "application/json");
         par.addHeader("Authorization", "Bearer "+getCFBearerToken());

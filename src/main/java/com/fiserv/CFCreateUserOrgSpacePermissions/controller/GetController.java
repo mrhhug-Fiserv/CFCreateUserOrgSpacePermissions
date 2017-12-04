@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,7 +56,6 @@ public class GetController {
         }
         return ret;
     }
-    
     
     
     private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
