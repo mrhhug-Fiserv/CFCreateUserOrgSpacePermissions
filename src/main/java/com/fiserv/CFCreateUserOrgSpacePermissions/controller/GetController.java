@@ -57,6 +57,21 @@ public class GetController {
         return ret;
     }
     
+    @GetMapping("/api/get/userpermission/{user}")
+    public Map<String, Object> getUserPermission(@PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException { 
+        Map<String, String> users = getUsers();
+        String extendedUrl = "/v2/users/"+users.get(user)+"/summary";
+        
+        HttpGet httpGet = getHTTPGET(baseUrl, extendedUrl);
+        Map<String, Object> responseGson;
+        String responseString;
+        try (CloseableHttpClient client = getHttpClient()) {
+            responseString = EntityUtils.toString(client.execute(httpGet).getEntity());
+            responseGson = new Gson().fromJson(responseString, Map.class);
+        }
+        return responseGson;
+    }
+    
     
     private HttpGet getHTTPGET(String baseUrl, String extendedUrl) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         HttpGet httpGet = new HttpGet(baseUrl+extendedUrl);

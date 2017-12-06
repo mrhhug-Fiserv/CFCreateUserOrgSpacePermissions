@@ -9,6 +9,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -58,8 +59,8 @@ public class isController {
         ret.put("isCFConnectionPresent", socketTest("api."+System.getenv("CF_SERVER_ADDRESS"), Integer.parseInt(System.getenv("CF_SERVER_PORT"))));
         return ret;
     }
-    @GetMapping("/api/is/CFReadWritePermissionsPresent")
-    public Map<String, Boolean> isCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    @GetMapping("/api/is/CFAdminReadWritePermissionsPresent")
+    public Map<String, Boolean> isAdminCFReadWritePermissionsPresent() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         Map<String, Boolean> ret = new HashMap<>();
 
         HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
@@ -73,11 +74,20 @@ public class isController {
         params.add(new BasicNameValuePair("scope", ""));
         params.add(new BasicNameValuePair("username", System.getenv("CF_USER")));
         httpPost.setEntity(new UrlEncodedFormEntity(params));
-        
+        System.out.println("DEBUG 0");
         try (CloseableHttpClient client = getHttpClient()) {
+            System.out.println("DEBUG 1");
             String responseString = EntityUtils.toString(client.execute(httpPost).getEntity());
+            System.out.println("DEBUG 2");
             Map<String, String> responseGson = new Gson().fromJson(responseString, Map.class);
+            System.out.println("DEBUG 3");
+            System.out.println("DEBUG 3.1");
+            System.out.println(Arrays.toString(responseGson.entrySet().toArray()));
+            System.out.println("DEBUG 3.2");
             String myScope = responseGson.get("scope");
+            System.out.println("DEBUG 4");
+            System.out.println("enable debug here(and everywhwre) later---dont forget mh 4 Dec 2017");
+            System.out.println("DEBUG 5");
             if(myScope.contains("cloud_controller.admin") && myScope.contains("cloud_controller.read") && myScope.contains("cloud_controller.write")) {
                 ret.put("isCFReadWritePermissionsPresent", Boolean.TRUE);
             }
@@ -90,10 +100,10 @@ public class isController {
     
     //Methods for validating CF end state
     @GetMapping("/api/is/CFUserPresent/{user}")
-    public Map<String, String> isCFUserPresent(@PathVariable String user) {
-	//TODO
-        Map<String, String> ret = new HashMap<>();
-        ret.put("isCFUserPresent", "//TODO");
+    public Map<String, Boolean> isCFUserPresent(@PathVariable String user) {
+        Map<String, Boolean> ret = new HashMap<>();
+        boolean returnType = new RestTemplate().getForObject(localhost+"/api/get/users/", Map.class).containsKey(user);
+        ret.put("isCFUserPresent", new RestTemplate().getForObject(localhost+"/api/get/users/", Map.class).containsKey(user));
         return ret;
     }
     @GetMapping("/api/is/CfOrgPresent/{org}")
@@ -104,17 +114,38 @@ public class isController {
 
     }
     @GetMapping("/api/is/CfSpacePresent/{org}/{space}")
-    public Map<String, String> isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        //TODO
-        Map<String, String> ret = new HashMap<>();
-        ret.put("isCfSpacePresent", "//TODO");
+    public Map<String, Boolean> isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        Map<String,Boolean> ret = new HashMap<>();
+        Map<String, String> orgs = new RestTemplate().getForObject(localhost+"/api/get/orgs/", Map.class);
+        ret.put("isCfSpacePresent", new RestTemplate().getForObject(localhost+"/api/get/spaces/"+orgs.get(org), Map.class).containsKey(space));
         return ret;
     }
-    @GetMapping("/api/is/CFPermisionPresent/{org}/{space}/{user}")
-    public Map<String, String> isCFPermisionPresent(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
-	//TODO
-        Map<String, String> ret = new HashMap<>();
-        ret.put("isCFUserSpacePermisionPresent", "//TODO");
+    @GetMapping("/api/is/CFPermissionPresent/{org}/{space}/{user}")
+    public Map<String, Boolean> isCFPermissionPresent(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
+        boolean orgPresent = false;
+        boolean spacePresent = false;
+        Map<String, Object> permissions = new RestTemplate().getForObject(localhost+"/api/get/userpermission/"+user, Map.class);
+        Map<String, List<Map<String, Map<String, String>>>> crazyMap;
+        crazyMap = (Map<String, List<Map<String, Map<String, String>>>>) permissions.get("entity");
+        List<Map<String,Map<String, String>>> usersOrgs = crazyMap.get("organizations");
+        for( Map<String, Map<String, String>> i : usersOrgs) {
+            Map<String, String> myEntity = i.get("entity");
+            String myName = myEntity.get("name");
+            if(myName.equals(org)) {
+                orgPresent = true;
+            }
+        }
+        List<Map<String, Map<String, String>>> usersSpaces = crazyMap.get("spaces");
+        for( Map<String, Map<String, String>> i : usersSpaces) {
+            Map<String, String> myEntity = i.get("entity");
+            String myName = myEntity.get("name");
+            if(myName.equals(space)) {
+                spacePresent = true;
+            }
+        }
+        
+        Map<String, Boolean> ret = new HashMap<>();
+        ret.put("isCFUserSpacePermisionPresent", orgPresent && spacePresent);
         return ret;
     }
     

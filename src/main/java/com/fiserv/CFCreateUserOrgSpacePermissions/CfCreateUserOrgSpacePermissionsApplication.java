@@ -42,7 +42,7 @@ public class CfCreateUserOrgSpacePermissionsApplication {
     }
     
     //you don't need to get this every time, but it does go stale
-    public static String getCFBearerToken() throws UnsupportedEncodingException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    public synchronized static String getCFBearerToken() throws UnsupportedEncodingException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         String ret = null;
         
         HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
