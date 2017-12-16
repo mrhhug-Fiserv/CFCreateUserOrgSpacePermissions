@@ -4,7 +4,6 @@ import java.util.List;
 
 /**
  * @author michael.hug@fiserv.com
- * Fiserv Internal Software
  */
 public class CFAPIResponse {
     public int total_results;

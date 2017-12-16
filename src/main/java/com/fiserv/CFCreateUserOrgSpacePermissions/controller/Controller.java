@@ -77,8 +77,27 @@ public class Controller {
         Map<String, String> ret = new HashMap<>();
         ret.put("username", user);
         ret.put("api_endpoint", "api."+System.getenv("CF_SERVER_ADDRESS"));
-        ret.put("org", getUsersSandboxOrg(user));
-        ret.put("space", getUsersSandboxSpace(user));
+        ret.put("org", myOrg);
+        ret.put("space", mySpace);
+        return ret;
+    }
+    
+    @PutMapping("/api/createUserSpacePermissions/{org}/{user}")
+    public Map<String, String> createUserSpacePermissions(@PathVariable String org, @PathVariable String user) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        String myOrg = org;
+        String mySpace = getUsersSandboxSpace(user);
+        
+        new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/user/"+user, null);
+        //new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/org/"+myOrg, null);
+        new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/space/"+myOrg+"/"+mySpace, null);
+        new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/orguser/"+myOrg+"/"+user, null);
+        //new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/orgmanager/"+myOrg+"/"+user, null);
+        new RestTemplate().put("http://localhost:"+System.getenv("PORT")+"/api/put/spacedev/"+myOrg+"/"+"/"+mySpace+"/"+user, null);
+        Map<String, String> ret = new HashMap<>();
+        ret.put("username", user);
+        ret.put("api_endpoint", "api."+System.getenv("CF_SERVER_ADDRESS"));
+        ret.put("org", myOrg);
+        ret.put("space", mySpace);
         return ret;
     }
 //    @DeleteMapping("api/deleteorgUserSpacePermisions/{org}/{user}/{space}")

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author michael.hug@fiserv.com
- * Fiserv Internal Software
  */
 @RestController("/api/get")
 public class GetController {
@@ -70,6 +69,11 @@ public class GetController {
             responseGson = new Gson().fromJson(responseString, Map.class);
         }
         return responseGson;
+    }
+    
+    @GetMapping("/api/get/BU")
+    public Map<String, String> getBUs() {
+        return new Gson().fromJson(System.getenv("BU"), Map.class);
     }
     
     

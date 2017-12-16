@@ -23,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author michael.hug@fiserv.com
- * Fiserv Internal Software
  */
 @RestController("/api/put")
 public class PutController{ 
