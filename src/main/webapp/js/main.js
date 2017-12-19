@@ -1,9 +1,16 @@
 $('#create-user-btn').click(function() {
     var username=$('#username').val();
-    var getURL="api/userSpacePermissionCheck/" + username;
-    var putURL="api/createOrgUserSpacePermissions/" + username;
+    var buChoice=$('#select-bu').val();
+    //var getURL="api/userSpacePermissionCheck/" + username;
+    var getURL="api/is/LDAPUserPresent/" + username;
+    var putURL="api/createUserSpacePermissions/" + buChoice + "/" + username;
+    
+    console.log("Calling: " + putURL);
+    
     if ( username == "" ) {
         $('.response-body').html('This username was not found. Please enter a valid shortname.');
+    } else if ( buChoice == "" || buChoice == null ) {
+        $('.response-body').html('Please select a valid Business Unit.');
     } else {
         $('.response-body').html('Please wait ...');
         $.ajax({
@@ -13,6 +20,7 @@ $('#create-user-btn').click(function() {
                 if(!result.isLDAPUserPresent) {
                     $('.response-body').html('This username was not found. Please enter a valid shortname.');
                 } else {
+                    console.log("LDAP User Found: " + username);
                     $.ajax({
                         type: 'PUT',
                         url: putURL,

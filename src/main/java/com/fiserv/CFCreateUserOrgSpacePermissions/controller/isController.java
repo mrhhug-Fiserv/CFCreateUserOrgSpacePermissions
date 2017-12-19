@@ -117,7 +117,11 @@ public class isController {
     public Map<String, Boolean> isCfSpacePresent(@PathVariable String org, @PathVariable String space) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         Map<String,Boolean> ret = new HashMap<>();
         Map<String, String> orgs = new RestTemplate().getForObject(localhost+"/api/get/orgs/", Map.class);
-        ret.put("isCfSpacePresent", new RestTemplate().getForObject(localhost+"/api/get/spaces/"+orgs.get(org), Map.class).containsKey(space));
+        if ( orgs.containsKey(org) ) {
+            ret.put("isCfSpacePresent", new RestTemplate().getForObject(localhost+"/api/get/spaces/"+orgs.get(org), Map.class).containsKey(space));
+        } else {
+            ret.put("isCfSpacePresent", false);
+        }
         return ret;
     }
     @GetMapping("/api/is/CFPermissionPresent/{org}/{space}/{user}")

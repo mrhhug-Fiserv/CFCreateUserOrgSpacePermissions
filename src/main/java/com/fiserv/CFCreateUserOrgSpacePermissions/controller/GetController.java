@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author michael.hug@fiserv.com
+ * @author jason.howard@fiserv.com
  */
 @RestController("/api/get")
 public class GetController {
@@ -73,7 +74,9 @@ public class GetController {
     
     @GetMapping("/api/get/BU")
     public Map<String, String> getBUs() {
-        return new Gson().fromJson(System.getenv("BU"), Map.class);
+        Map<String, String> ret = new Gson().fromJson(System.getenv("BU"), Map.class);
+        ret.put(" Create a new org just for me!", "new");
+        return ret;
     }
     
     
