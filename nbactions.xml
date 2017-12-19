@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <Env.LDAP_SERVER_ADDRESS>corp-ad-nonprod.nc.checkfree.com</Env.LDAP_SERVER_ADDRESS>
+                <Env.LDAP_SERVER_PORT>389</Env.LDAP_SERVER_PORT>
+                <Env.LDAP_USER>svc_vsphereinv@corp.checkfree.com</Env.LDAP_USER>
+                <Env.LDAP_PASS>01qjy8^Z04xB</Env.LDAP_PASS>
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.fiserv.CFCreateUserOrgSpacePermissions.CfCreateUserOrgSpacePermissionsApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <jpda.listen>true</jpda.listen>
+                <Env.PORT>8080</Env.PORT>
+                <Env.LDAP_SERVER_ADDRESS>corp-ad-nonprod.nc.checkfree.com</Env.LDAP_SERVER_ADDRESS>
+                <Env.LDAP_SERVER_PORT>389</Env.LDAP_SERVER_PORT>
+                <Env.LDAP_USER>svc_vsphereinv@corp.checkfree.com</Env.LDAP_USER>
+                <Env.LDAP_PASS>01qjy8^Z04xB</Env.LDAP_PASS>
+                <Env.LDAP_SEARCH_BASE>OU=Associates,DC=corp,DC=checkfree,DC=com</Env.LDAP_SEARCH_BASE>
+                <Env.CF_SERVER_ADDRESS>cloudfoundry.onefiserv.net</Env.CF_SERVER_ADDRESS>
+                <Env.CF_SERVER_PORT>443</Env.CF_SERVER_PORT>
+                <Env.CF_USER>admin</Env.CF_USER>
+                <Env.CF_PASS>d4c33eebaddd157d8d03</Env.CF_PASS>
+                <Env.BU>{"Community Bank": "CommunityBank-org", "Output Solutions": "OutputSolutions-org", "Large Bank Solutions": "LargeBankSolutions-org", "Open Solutions": "OpenSolutions-org", "Enterprise Technology": "etg-org", "Credit Union Solutions": "cus-org", "Biller Solutions": "BillerSolutions-org", "FRMS": "FRMS-org", "Investment Services": "InvestmentServices-org", "Item Processing Sol": "ItemProcessingSol-org", "Electronic Payments": "epay-org", "Digital Channels": "dc-org", "Lending Solutions": "lending-org", "Card Services": "CardServices-org"}</Env.BU>
+                
+                
+                
+            </properties>
+        </action>
+    </actions>

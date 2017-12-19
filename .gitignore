@@ -22,3 +22,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### Fiserv internal resources ###
+src/main/webapp/index.html
