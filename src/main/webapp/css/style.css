@@ -1,5 +1,6 @@
 /*
  * @author: Dean Hassan (Dean.Hassan@Fiserv.com)
+ * @author: Jason Howard (Jason.Howard@Fiserv.com)
  */
 
 @font-face {
@@ -102,7 +103,7 @@ li.active {
 	border-left: 3px solid #f60;
 }
 
-.fiserv-cloud-logo {
+.enterprise-cloud-logo {
 	bottom: 0;
 	margin: 0 auto;
 	margin-bottom: 100px;
@@ -158,6 +159,13 @@ main {
 }
 
 #username {
+	border: 1px solid gray;
+}
+
+#select-bu {
+	text-align: justify;
+	text-align-last: center;
+	color: #808080;
 	border: 1px solid gray;
 }
 
