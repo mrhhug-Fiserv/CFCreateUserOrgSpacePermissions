@@ -12,9 +12,7 @@ LDAP_SERVER_ADDRESS=mycorp.example.net
 LDAP_SERVER_PORT=389<br>
 LDAP_USER=ldapreadonlyserviceaccount@mycorp.example.net<br>
 LDAP_PASS=ldapreadonlyserviceaccountpassword
-
 LDAP_SEARCH_BASE=OU=peepz,DC=mycorp,DC=example,DC=net
-
 CF_SERVER_ADDRESS=pcfinstall.example.net
 
 CF_SERVER_PORT=443
