@@ -5,6 +5,7 @@ Initial configuration is setup so that users have an ldap origin.
 LDAP short names are used in several places.
 
 The following Environment variables must be modified to fit your org : 
+
 LDAP_SERVER_ADDRESS=mycorp.example.net
 LDAP_SERVER_PORT=389
 LDAP_USER=ldapreadonlyserviceaccount@mycorp.example.net
