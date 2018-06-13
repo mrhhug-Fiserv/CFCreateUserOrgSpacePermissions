@@ -24,4 +24,4 @@ nbdist/
 .nb-gradle/
 
 ### Fiserv internal resources ###
-src/main/webapp/index.html
+manifest_Fiserv.yml

@@ -1,19 +1,8 @@
-# CFCreateUserOrgSpacePermissions
-Create User, Org, Space, and permissions in cloudfoundry for a self service portal
+# SelfService
+Create User, Space, and permissions in a cloudfoundry self service portal. Intended to be used only for non-production regions.
 
-Initial configuration is setup so that users have an ldap origin.
-LDAP short names are used in several places.
+Environmental variables can be found in the manifest.yml
 
-The following Environment variables must be modified to fit your org : 
+I really wanted to write this in golang, but the go-cfclient didn't have a way to create LDAP users. So i just leveraged the CF API.
 
-
-LDAP_SERVER_ADDRESS=mycorp.example.net<br>
-LDAP_SERVER_PORT=389<br>
-LDAP_USER=ldapreadonlyserviceaccount@mycorp.example.net<br>
-LDAP_PASS=ldapreadonlyserviceaccountpassword<br>
-LDAP_SEARCH_BASE=OU=peepz,DC=mycorp,DC=example,DC=net<br>
-CF_SERVER_ADDRESS=pcfinstall.example.net<br>
-CF_SERVER_PORT=443<br>
-CF_USER=admin<br>
-CF_PASS=supersecretpassthatiwouldnevershare<br>
-BU={"Internal Sales": "IntSales-org", "POSIX Engineering": "Peng-org", "Vim Users": "wq-org"}<br>
+![](src/main/webapp/img/screenshot.PNG)

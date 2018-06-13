@@ -1,7 +1,12 @@
 ---
 applications:
 - name: selfservice
-  buildpack : java_buildpack_offln_current
+  buildpack: java_buildpack_offline
   memory: 1G
   instances: 1
-  path : target\CFCreateUserOrgSpacePermissions-1.0.0-SNAPSHOT.war
+  path: target/CFCreateUserOrgSpacePermissions-1.0.1-SNAPSHOT.war
+  env:
+    CF_SYS: 'sys.cloudfoundry.onefiserv.net'
+    CF_USER: 'admin'
+    CF_PASS: <REDACTED>
+    JAVA_OPTS: '-Djavax.net.ssl.TrustStore=michaelsJavaTrustStore -Djavax.net.ssl.trustStorePassword=changeit'

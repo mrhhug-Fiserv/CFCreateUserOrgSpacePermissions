@@ -1,4 +1,4 @@
-package com.fiserv.CFCreateUserOrgSpacePermissions;
+package com.fiserv.CFCreateUserOrgSpacePermissions.controller;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -25,12 +25,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CfCreateUserOrgSpacePermissionsApplication {
+public class Main {
     
     public static String localhost = "http://localhost:" + System.getenv("PORT");
     
     public static void main(String[] args) {
-        SpringApplication.run(CfCreateUserOrgSpacePermissionsApplication.class, args);
+        SpringApplication.run(Main.class, args);
     }
     
     public static CloseableHttpClient getHttpClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
@@ -45,7 +45,7 @@ public class CfCreateUserOrgSpacePermissionsApplication {
     public synchronized static String getCFBearerToken() throws UnsupportedEncodingException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         String ret = null;
         
-        HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SERVER_ADDRESS")+"/oauth/token");
+        HttpPost httpPost = new HttpPost("https://login."+System.getenv("CF_SYS")+"/oauth/token");
         httpPost.addHeader("Accept", "application/json");
         httpPost.addHeader("Authorization", "Basic Y2Y6");
         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");

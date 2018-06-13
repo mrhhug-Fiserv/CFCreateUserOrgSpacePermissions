@@ -12,19 +12,19 @@ public class DeleteController {
     
     @DeleteMapping("/api/delete/permission/{org}/{space}/{user}")
     public String deletePermission(@PathVariable String org, @PathVariable String space, @PathVariable String user) {
-	return "";
+	return "UNIMPLEMENTED";
     }
     @DeleteMapping("/api/delete/user/{user}")
     public String deleteUser(@PathVariable String user) {
-	return "";
+	return "UNIMPLEMENTED";
     }
     @DeleteMapping("/api/delete/space/{space}")
     public String deleteSpace(@PathVariable String space) {
-	return "";
+	return "UNIMPLEMENTED";
     }
     @DeleteMapping("/api/delete/org/{org}")
     public String deleteOrg(@PathVariable String org) {
-	return "";
+	return "UNIMPLEMENTED";
     }
     
     
