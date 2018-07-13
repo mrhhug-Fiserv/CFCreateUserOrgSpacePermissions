@@ -8,5 +8,5 @@ applications:
   env:
     CF_SYS: 'sys.cloudfoundry.onefiserv.net'
     CF_USER: 'admin'
-    CF_PASS: <REDACTED>
+    CF_PASS: '<REDACTED>'
     JAVA_OPTS: '-Djavax.net.ssl.TrustStore=michaelsJavaTrustStore -Djavax.net.ssl.trustStorePassword=changeit'

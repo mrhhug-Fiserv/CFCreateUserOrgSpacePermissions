@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
@@ -51,6 +52,7 @@ public class Controller{
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
+	System.out.println("Created user: " + Arrays.toString(ret.entrySet().toArray()));
         return ret;
     }
     
